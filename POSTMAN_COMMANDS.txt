@@ -1,0 +1,176 @@
+================================================================
+   ORDER MANAGEMENT SYSTEM - POSTMAN COMMANDS
+================================================================
+
+STEP 0 - THE SERVER MUST BE RUNNING
+  Eclipse: com.example.ordermanagement
+     -> OrderManagementApplication.java
+     -> Run As -> Java Application
+  Wait for "Started OrderManagementApplication" in the Console.
+  (Only ONE copy can run. If you see "Port 8080 was already in
+   use", it is already running - just use Postman.)
+
+HOW TO SEND EACH REQUEST IN POSTMAN
+  1. Click "+" to open a new tab.
+  2. Choose the METHOD (GET / POST / PUT / DELETE) on the left
+     of the URL box.
+  3. Paste the URL.
+  4. If there is a BODY:
+       Body tab -> select "raw" -> on the right change
+       "Text" to "JSON" -> paste the body.
+  5. Click the blue Send button.
+  6. The answer appears at the bottom, with the status
+     (200 OK, 201 Created, 400, 404, 409) on the right.
+  -> Take a screenshot for your report after each one.
+
+NOTE: Your table already has orders 2, 3 and 101 (typed in
+the console). So the new orders below use IDs 201 - 207.
+Console and Postman use the SAME table.
+
+================================================================
+REQUEST 1 - PART (a)  INSERT AT LEAST THREE ORDERS
+================================================================
+METHOD : POST
+URL    : http://localhost:8080/api/orders/bulk
+BODY   : (raw -> JSON) copy everything from [ to ]
+
+[
+  {"orderId": 201, "customerName": "Amit Sharma", "productName": "Laptop", "quantity": 5, "unitPrice": 55000, "status": "Pending"},
+  {"orderId": 202, "customerName": "Neha Gupta", "productName": "Mobile Phone", "quantity": 3, "unitPrice": 20000, "status": "Pending"},
+  {"orderId": 203, "customerName": "Ravi Kumar", "productName": "Headphones", "quantity": 1, "unitPrice": 1500, "status": "Shipped"},
+  {"orderId": 205, "customerName": "Sunil Verma", "productName": "Mouse", "quantity": 6, "unitPrice": 400, "status": "Pending"},
+  {"orderId": 206, "customerName": "Kavita Rao", "productName": "Monitor", "quantity": 2, "unitPrice": 9000, "status": "Delivered"},
+  {"orderId": 207, "customerName": "Rohit Jain", "productName": "Charger", "quantity": 3, "unitPrice": 700, "status": "Cancelled"}
+]
+
+EXPECTED: 201 Created
+  "message": "6 order(s) inserted, 0 skipped."
+  (Click Send a 2nd time -> "0 order(s) inserted, 6 skipped."
+   and every line says "Order ID ... already exists.")
+
+================================================================
+REQUEST 2 - PART (a)  DUPLICATE ORDER ID
+================================================================
+METHOD : POST
+URL    : http://localhost:8080/api/orders
+BODY   : (raw -> JSON)
+
+{"orderId": 101, "customerName": "Test", "productName": "Pen", "quantity": 1, "unitPrice": 10, "status": "Pending"}
+
+EXPECTED: 409 Conflict
+  "message": "Order ID 101 already exists."
+
+================================================================
+REQUEST 3 - PART (b)  STATUS + QUANTITY > 2, PRICE HIGH->LOW
+================================================================
+METHOD : GET
+URL    : http://localhost:8080/api/orders/status/Pending
+BODY   : none
+
+EXPECTED: 200 OK -> orders 201 (55000), 202 (20000), 205 (400)
+  (203 is Shipped, 206 has quantity 2 -> not shown)
+
+Extra:
+METHOD : GET
+URL    : http://localhost:8080/api/orders/status/Delivered
+EXPECTED: 200 OK
+  "No orders with status 'Delivered' and quantity greater than 2."
+
+================================================================
+REQUEST 4 - PART (c)  INCREASE QUANTITY
+================================================================
+METHOD : PUT
+URL    : http://localhost:8080/api/orders/203/quantity
+BODY   : (raw -> JSON)
+
+{"additionalQuantity": 4}
+
+EXPECTED: 200 OK -> quantity of 203 becomes 1 + 4 = 5
+
+Order does not exist:
+METHOD : PUT
+URL    : http://localhost:8080/api/orders/999/quantity
+BODY   : {"additionalQuantity": 4}
+EXPECTED: 404 Not Found  "Order with ID 999 does not exist."
+
+================================================================
+REQUEST 5 - PART (d)  UPDATE STATUS
+================================================================
+METHOD : PUT
+URL    : http://localhost:8080/api/orders/202/status
+BODY   : (raw -> JSON)
+
+{"status": "Shipped"}
+
+EXPECTED: 200 OK -> updated details, "status": "Shipped"
+
+Invalid status:
+METHOD : PUT
+URL    : http://localhost:8080/api/orders/203/status
+BODY   : {"status": "Returned"}
+EXPECTED: 400 Bad Request  "Invalid status 'Returned'. ..."
+
+Order does not exist:
+METHOD : PUT
+URL    : http://localhost:8080/api/orders/999/status
+BODY   : {"status": "Shipped"}
+EXPECTED: 404 Not Found
+
+================================================================
+REQUEST 6 - PART (e)  TOTAL ORDER VALUE (SUM)
+================================================================
+METHOD : GET
+URL    : http://localhost:8080/api/orders/total-value
+BODY   : none
+
+EXPECTED: 200 OK  {"totalOrderValue": 369500.0}
+  (your 3 console orders 4500 + the new orders 365000)
+
+================================================================
+REQUEST 7 - PART (e)  DELETE ONLY IF CANCELLED
+================================================================
+METHOD : DELETE
+URL    : http://localhost:8080/api/orders/207
+BODY   : none
+EXPECTED: 200 OK  "Order 207 deleted successfully."
+          (207 is Cancelled)
+
+Not Cancelled:
+METHOD : DELETE
+URL    : http://localhost:8080/api/orders/201
+EXPECTED: 400 Bad Request  "Order 201 cannot be deleted. Its
+          status is 'Pending'. Only Cancelled orders can be
+          deleted."
+
+Does not exist:
+METHOD : DELETE
+URL    : http://localhost:8080/api/orders/999
+EXPECTED: 404 Not Found  "Order with ID 999 does not exist."
+
+================================================================
+EXTRA
+================================================================
+All orders : GET  http://localhost:8080/api/orders
+One order  : GET  http://localhost:8080/api/orders/201
+
+================================================================
+SHORTCUT - IMPORT ALL REQUESTS AT ONCE
+================================================================
+Postman -> Import (top left) -> files ->
+  D:\project\Order_Management_System\
+     Order-Management-API.postman_collection.json
+All requests appear on the left side under
+"Order Management System API". Click one -> Send.
+
+================================================================
+IF SOMETHING GOES WRONG
+================================================================
+ "Could not send request" / ECONNREFUSED
+     -> server not running. Run OrderManagementApplication.java
+ 400 "Request body is missing or is not valid JSON"
+     -> Body must be raw + JSON. Check commas and quotes.
+ "Port 8080 was already in use" in Eclipse
+     -> it is already running. Red square stops the old one.
+ Start fresh (empty table), in MySQL:
+     TRUNCATE ecommerce_db.Orders;
+================================================================

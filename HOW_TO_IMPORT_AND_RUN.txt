@@ -1,0 +1,169 @@
+================================================================
+   ORDER MANAGEMENT SYSTEM - HOW TO IMPORT AND RUN IN ECLIPSE
+================================================================
+
+----------------------------------------------------------------
+WHY YOU DON'T SEE pom.xml IN THAT WINDOW
+----------------------------------------------------------------
+The window in your screenshot is
+   General -> "Existing Projects into Workspace".
+That window only lists PROJECTS (by their .project file).
+It never shows pom.xml. That is normal, not an error.
+
+pom.xml only shows in the OTHER import window:
+   Maven -> "Existing Maven Projects".
+
+Both ways work for this project. Use ONE of them:
+
+================================================================
+WAY 1 - EASIEST (you are already on this screen)
+================================================================
+ 1. In that window, Order_Management_System is already ticked.
+ 2. Leave "Copy projects into workspace" UNTICKED.
+ 3. Click Finish.
+ 4. Wait for the bar at the bottom right to finish.
+ 5. Right-click Order_Management_System
+       -> Maven -> Update Project...
+       -> tick "Force Update of Snapshots/Releases" -> OK
+ 6. Wait again until it finishes. Done.
+
+================================================================
+WAY 2 - MAVEN IMPORT (shows pom.xml)
+================================================================
+ 1. Click Cancel in that window.
+ 2. File -> Import...
+ 3. Open the "Maven" folder (NOT "General")
+       -> Existing Maven Projects -> Next
+ 4. Root Directory -> Browse -> D:\project\Order_Management_System
+       -> Select Folder
+ 5. Now you see:  [x] /pom.xml  com.example:Order_Management_System
+ 6. Click Finish and wait until it finishes.
+
+If Eclipse says the project "already exists in the workspace":
+   Cancel, right-click the old Order_Management_System
+   -> Delete -> DO NOT tick "Delete project contents on disk"
+   -> OK, then import again.
+
+----------------------------------------------------------------
+WHAT YOU SHOULD SEE AFTER IMPORT
+----------------------------------------------------------------
+Order_Management_System
+  src/main/java
+     com.example.ordermanagement
+         OrderManagementApplication.java   <- REST API (Postman)
+     com.example.ordermanagement.console
+         OrderManagementConsole.java       <- MENU PROGRAM (exam Q)
+     com.example.ordermanagement.controller
+         OrderController.java              <- Controller
+     com.example.ordermanagement.dao
+         DBConnection.java                 <- (a) connection
+         OrderDao.java                     <- all SQL queries
+     com.example.ordermanagement.exception
+     com.example.ordermanagement.model
+         Order.java                        <- Model
+     com.example.ordermanagement.service
+         OrderService.java                 <- rules for (a)-(e)
+  src/main/resources
+  JRE System Library
+  Maven Dependencies
+  pom.xml
+
+If you still see "src -> (default package)" or a red X:
+   right-click project -> Maven -> Update Project -> Force -> OK
+If "Maven" is not in the menu:
+   right-click project -> Configure -> Convert to Maven Project
+
+================================================================
+RUNNING THE EXAM QUESTION (menu-driven JDBC program)
+================================================================
+Right-click the FILE, not the project folder:
+
+  src/main/java -> com.example.ordermanagement.console
+     -> OrderManagementConsole.java
+     -> Run As -> Java Application
+
+The menu appears in the Console at the bottom. Click inside the
+Console and type the number, then press Enter.
+
+  1. Insert Order Records                          -> part (a)
+  2. Display Orders by Status (quantity > 2)       -> part (b)
+  3. Increase Order Quantity                       -> part (c)
+  4. Update Order Status                           -> part (d)
+  5. Total Order Value & Delete Cancelled Order    -> part (e)
+  6. Display All Orders
+  0. Exit
+
+----------------------------------------------------------------
+WHAT TO TYPE (demo for the teacher)
+----------------------------------------------------------------
+(a) Choose 1. "How many orders?" -> 6. Enter these:
+
+  ID   Customer      Product        Qty  Price   Status
+  101  Amit Sharma   Laptop         5    55000   Pending
+  102  Neha Gupta    Mobile Phone   3    20000   Pending
+  103  Ravi Kumar    Headphones     1    1500    Shipped
+  105  Sunil Verma   Mouse          6    400     Pending
+  106  Kavita Rao    Monitor        2    9000    Delivered
+  107  Rohit Jain    Charger        3    700     Cancelled
+
+    Duplicate test: choose 1 again, type 101 as Order ID
+    -> "Error: Order ID 101 already exists. Record skipped."
+
+(b) Choose 2 -> type Pending
+    -> shows 101, 102, 105 (highest unit price first).
+    Type Delivered -> "No orders ... quantity greater than 2."
+
+(c) Choose 3 -> order ID 103 -> additional quantity 4
+    -> quantity becomes 5.
+    Order ID 999 -> "Order with ID 999 does not exist."
+
+(d) Choose 4 -> order ID 102 -> order details shown
+    -> type Shipped -> updated details shown.
+    Type Returned -> "Invalid status ..." (not updated).
+    Order ID 999 -> "does not exist".
+
+(e) Choose 5 -> "Total Order Value: ..." is shown (SUM)
+    -> type 107 -> deleted (it is Cancelled).
+    Choose 5 again -> type 101 -> "Cannot delete ... Only
+    Cancelled orders can be deleted."
+
+----------------------------------------------------------------
+WHERE EACH PART IS IN THE CODE (show to teacher)
+----------------------------------------------------------------
+ (a) connection  : dao/DBConnection.java  getConnection()
+     insert      : dao/OrderDao.java      insert()   (PreparedStatement)
+     duplicate ID: service/OrderService.java  addOrder()
+ (b) dao/OrderDao.java   findByStatusWithQuantityAbove2()
+       SELECT * FROM Orders WHERE status = ? AND quantity > 2
+       ORDER BY unit_price DESC
+ (c) dao/OrderDao.java   addQuantity()
+       UPDATE Orders SET quantity = quantity + ? WHERE order_id = ?
+ (d) service/OrderService.java  updateStatus()
+       UPDATE Orders SET status = ? WHERE order_id = ?
+ (e) dao/OrderDao.java   getTotalOrderValue(), deleteIfCancelled()
+       SELECT SUM(quantity * unit_price) FROM Orders
+       DELETE FROM Orders WHERE order_id = ? AND status = 'Cancelled'
+ Menu (switch-case): console/OrderManagementConsole.java
+
+================================================================
+POSTMAN (only for the report screenshots)
+================================================================
+Run  com.example.ordermanagement -> OrderManagementApplication.java
+     -> Run As -> Java Application
+Wait for "Started OrderManagementApplication" in the Console.
+Then open POSTMAN_COMMANDS.txt (same folder) and follow it.
+Stop the server with the red square (Terminate) in the Console
+before running it again.
+
+================================================================
+COMMON PROBLEMS
+================================================================
+ "Communications link failure"  -> MySQL is not running.
+     Windows key -> type Services -> MySQL84 -> Start.
+ "Access denied for user root"  -> change USER / PASSWORD in
+     dao/DBConnection.java to your MySQL login.
+ "Port 8080 was already in use" -> an old run is still on.
+     Click the red square in the Console, then run again.
+ Nothing happens on Run As      -> you right-clicked the project
+     folder. Right-click the .java FILE instead.
+================================================================

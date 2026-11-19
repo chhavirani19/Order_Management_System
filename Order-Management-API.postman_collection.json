@@ -1,0 +1,412 @@
+{
+  "info": {
+    "name": "Order Management System API",
+    "description": "Run OrderManagementApplication first. Send the requests from top to bottom.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "(a) Insert at least 3 orders",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/orders/bulk",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "orders",
+            "bulk"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "[\n  {\n    \"orderId\": 201,\n    \"customerName\": \"Amit Sharma\",\n    \"productName\": \"Laptop\",\n    \"quantity\": 5,\n    \"unitPrice\": 55000,\n    \"status\": \"Pending\"\n  },\n  {\n    \"orderId\": 202,\n    \"customerName\": \"Neha Gupta\",\n    \"productName\": \"Mobile Phone\",\n    \"quantity\": 3,\n    \"unitPrice\": 20000,\n    \"status\": \"Pending\"\n  },\n  {\n    \"orderId\": 203,\n    \"customerName\": \"Ravi Kumar\",\n    \"productName\": \"Headphones\",\n    \"quantity\": 1,\n    \"unitPrice\": 1500,\n    \"status\": \"Shipped\"\n  },\n  {\n    \"orderId\": 205,\n    \"customerName\": \"Sunil Verma\",\n    \"productName\": \"Mouse\",\n    \"quantity\": 6,\n    \"unitPrice\": 400,\n    \"status\": \"Pending\"\n  },\n  {\n    \"orderId\": 206,\n    \"customerName\": \"Kavita Rao\",\n    \"productName\": \"Monitor\",\n    \"quantity\": 2,\n    \"unitPrice\": 9000,\n    \"status\": \"Delivered\"\n  },\n  {\n    \"orderId\": 207,\n    \"customerName\": \"Rohit Jain\",\n    \"productName\": \"Charger\",\n    \"quantity\": 3,\n    \"unitPrice\": 700,\n    \"status\": \"Cancelled\"\n  }\n]",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "(a) Duplicate order ID -> 409",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/orders",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "orders"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"orderId\": 201,\n  \"customerName\": \"Test\",\n  \"productName\": \"Pen\",\n  \"quantity\": 1,\n  \"unitPrice\": 10,\n  \"status\": \"Pending\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "(b) Status Pending, qty > 2, price DESC",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/orders/status/Pending",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "orders",
+            "status",
+            "Pending"
+          ]
+        }
+      }
+    },
+    {
+      "name": "(b) Status Delivered (none)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/orders/status/Delivered",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "orders",
+            "status",
+            "Delivered"
+          ]
+        }
+      }
+    },
+    {
+      "name": "(c) Increase quantity of 203 by 4",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/orders/203/quantity",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "orders",
+            "203",
+            "quantity"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"additionalQuantity\": 4\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "(c) Order not found -> 404",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/orders/999/quantity",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "orders",
+            "999",
+            "quantity"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"additionalQuantity\": 4\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "(d) Update status of 202 to Shipped",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/orders/202/status",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "orders",
+            "202",
+            "status"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"Shipped\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "(d) Invalid status -> 400",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/orders/203/status",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "orders",
+            "203",
+            "status"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"Returned\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "(d) Order not found -> 404",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/orders/999/status",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "orders",
+            "999",
+            "status"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"Shipped\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "(e) Total order value (SUM)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/orders/total-value",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "orders",
+            "total-value"
+          ]
+        }
+      }
+    },
+    {
+      "name": "(e) Delete Cancelled order 207",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/orders/207",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "orders",
+            "207"
+          ]
+        }
+      }
+    },
+    {
+      "name": "(e) Delete Pending order 201 -> 400",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/orders/201",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "orders",
+            "201"
+          ]
+        }
+      }
+    },
+    {
+      "name": "(e) Delete missing order -> 404",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/orders/999",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "orders",
+            "999"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Extra: all orders",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/orders",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "orders"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Extra: order by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/orders/201",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "orders",
+            "201"
+          ]
+        }
+      }
+    }
+  ]
+}

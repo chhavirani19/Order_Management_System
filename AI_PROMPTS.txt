@@ -1,0 +1,30 @@
+=====================================================================
+   5. THREE AI PROMPTS USED FOR CREATING THE PROJECT
+   (copy these into the table of your report)
+=====================================================================
+
+S.No | AI Prompt
+-----+---------------------------------------------------------------
+ 1   | "Create a menu-driven Java JDBC application for an Order
+     |  Management System using MySQL database ecommerce_db with a table
+     |  Orders (order_id INT primary key, customer_name VARCHAR(100),
+     |  product_name VARCHAR(100), quantity INT, unit_price DOUBLE,
+     |  status VARCHAR(30)). Establish the connection and insert at
+     |  least three orders using PreparedStatement, and handle duplicate
+     |  order IDs."
+-----+---------------------------------------------------------------
+ 2   | "Add menu options to: display all orders with a given status and
+     |  quantity greater than 2 sorted by unit price in descending
+     |  order; increase the quantity of an order by order ID; update the
+     |  status of an existing order only if the new status is valid
+     |  (Pending, Shipped, Delivered) and show the updated details; show
+     |  the total order value using SUM(quantity * unit_price) and delete
+     |  an order only if its status is Cancelled, with proper messages
+     |  when the order does not exist."
+-----+---------------------------------------------------------------
+ 3   | "Convert this into a Spring Boot REST API with Model, DAO,
+     |  Service and Controller layers using the same JDBC code, return
+     |  proper HTTP status codes (201, 400, 404, 409) with a global
+     |  exception handler, and give me the Postman requests (URL, method
+     |  and JSON body) to test each operation."
+=====================================================================
